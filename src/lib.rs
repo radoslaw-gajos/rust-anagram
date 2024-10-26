@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::cmp::Ordering;
 
 type CharacterMap = BTreeMap<char, i32>;
 
@@ -18,13 +19,39 @@ fn is_anagram(left: Vec<&Word>, right: Vec<&Word>) -> bool {
     panic!("not implemented yet");
 }
 
-fn merge(left: &CharacterMap, right: &CharacterMap) -> CharacterMap {
+fn merge(left_map: &CharacterMap, right_map: &CharacterMap) -> CharacterMap {
+    let mut merged = BTreeMap::new();
 
-    let mut map = BTreeMap::new();
-    map.insert('a', 0);
-    map.insert('b', 0);
-    map.insert('c', 0);
-    map
+    let mut left_iter = left_map.iter();
+    let mut right_iter = right_map.iter();
+
+    let left = left_iter.next();
+    let right = right_iter.next();
+    
+    if left.is_some() && right.is_some() {
+        let left = left.unwrap();
+        let right = right.unwrap();
+
+        let (left_key, left_value) = left;
+        let (right_key, right_value) = right;
+
+        match left_key.cmp(&right_key) {
+            Ordering::Less => {
+                merged.insert(*left_key, *left_value);
+                merged.insert(*right_key, *right_value);
+            }
+            Ordering::Equal => {
+                let (sum_key, sum_value) = (left_key, left_value + right_value);
+                merged.insert(*sum_key, sum_value);
+            }
+            Ordering::Greater => {
+                merged.insert(*left_key, *left_value);
+                merged.insert(*right_key, *right_value);
+            }
+        }
+    }
+
+    merged
 }
 
 fn map_characters(text: &str) -> CharacterMap {
