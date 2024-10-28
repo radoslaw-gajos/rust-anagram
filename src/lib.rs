@@ -20,47 +20,18 @@ fn is_anagram(left: Vec<&Word>, right: Vec<&Word>) -> bool {
 }
 
 fn merge(left_map: &CharacterMap, right_map: &CharacterMap) -> CharacterMap {
-    let mut merged = BTreeMap::new();
+    let mut merged = left_map.clone();
 
-    let mut left_iter = left_map.iter();
-    let mut right_iter = right_map.iter();
-
-    let left_opt = left_iter.next();
-    let right_opt = right_iter.next();
-    
-    if left_opt.is_some() && right_opt.is_some() {
-        loop {
-            let mut left = left_opt.unwrap();
-            let mut right = right_opt.unwrap();
-
-            let (left_key, left_value) = left;
-            let (right_key, right_value) = right;
-
-            match left_key.cmp(&right_key) {
-                Ordering::Less => {
-                    merged.insert(*left_key, *left_value);
-                    merged.insert(*right_key, *right_value);
-                    while let Some(l) = left_iter.next() {
-                        (lkey, lvalue) = l;
-                        match lkey.cmp(right_key) {
-                            Ordering::Less => {
-                                merged.insert(*lkey, *lvalue);
-                            }
-                            Ordering::More => ,
-                            Ordering::Equal =>,
-                        }
-                    }
-                }
-                Ordering::Equal => {
-                    let (sum_key, sum_value) = (left_key, left_value + right_value);
-                    merged.insert(*sum_key, sum_value);
-                }
-                Ordering::Greater => {
-                    merged.insert(*left_key, *left_value);
-                    merged.insert(*right_key, *right_value);
-                }
+    for (ch, count) in right_map.iter() {
+        let dup = merged.get_mut(ch);
+        match dup {
+            Some(dup_count) => {
+                *dup_count += *count;
             }
-        }
+            None => {
+                merged.insert(*ch, *count);
+            }
+        };
     }
 
     merged
