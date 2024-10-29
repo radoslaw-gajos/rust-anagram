@@ -16,7 +16,8 @@ impl Word {
 }
 
 fn is_anagram(left: Vec<&Word>, right: Vec<&Word>) -> bool {
-    panic!("not implemented yet");
+    // temporary implementation
+    left.get(0).unwrap().characters == merge(&right.get(0).unwrap().characters, &right.get(1).unwrap().characters)
 }
 
 fn merge(left_map: &CharacterMap, right_map: &CharacterMap) -> CharacterMap {
@@ -83,5 +84,18 @@ mod tests {
         assert_eq!(map.get(&'a').unwrap(), &2);
         assert_eq!(map.get(&'b').unwrap(), &2);
         assert_eq!(map.get(&'c').unwrap(), &2);
+    }
+
+    #[test]
+    fn should_recognize_anagram() {
+        // given
+        let left = vec![Word::from("boat".to_string())];
+        let right = vec![Word::from("a".to_string()), Word::from("bot".to_string())];
+
+        // when
+        let is_anagram = is_anagram(left.iter().collect(), right.iter().collect());
+
+        // then
+        assert!(is_anagram);
     }
 }
