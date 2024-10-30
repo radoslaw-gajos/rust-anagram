@@ -16,8 +16,19 @@ impl Word {
 }
 
 fn is_anagram(left: Vec<&Word>, right: Vec<&Word>) -> bool {
-    // temporary implementation
-    left.get(0).unwrap().characters == merge(&right.get(0).unwrap().characters, &right.get(1).unwrap().characters)
+    merge_recursive(left.iter().map(|word| &word.characters).collect())
+        ==  merge_recursive(right.iter().map(|word| &word.characters).collect())
+        
+}
+
+fn merge_recursive(ch: Vec<&CharacterMap>) -> CharacterMap {
+    if ch.len() == 1 {
+        return (*ch.get(0).unwrap()).clone();
+    }
+    if ch.len() == 2 {
+        return merge(ch.get(0).unwrap(), ch.get(1).unwrap());
+    }
+    merge(ch.get(0).unwrap(), &merge_recursive(ch[1..ch.len()].to_vec()))
 }
 
 fn merge(left_map: &CharacterMap, right_map: &CharacterMap) -> CharacterMap {
