@@ -15,6 +15,15 @@ impl Word {
     }
 }
 
+fn has_common_letters(s: &str, w: &Word) -> bool {
+    for c in s.to_lowercase().chars() {
+        if !w.characters.contains_key(&c) {
+            return false;
+        }
+    }
+    true
+}
+
 fn is_anagram(left: Vec<&Word>, right: Vec<&Word>) -> bool {
     merge_recursive(left.iter().map(|word| &word.characters).collect())
         ==  merge_recursive(right.iter().map(|word| &word.characters).collect())
@@ -108,5 +117,13 @@ mod tests {
 
         // then
         assert!(is_anagram);
+    }
+
+    #[test]
+    fn should_tell_if_has_common_letters() {
+        // when
+        let has_common = has_common_letters("dog", &Word::from("god".to_string()));
+
+        assert!(has_common);
     }
 }
