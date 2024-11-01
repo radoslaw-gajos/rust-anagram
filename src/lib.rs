@@ -126,4 +126,12 @@ mod tests {
 
         assert!(has_common);
     }
+
+    #[test]
+    fn should_tell_letters_dont_match() {
+        // when
+        let has_common = has_common_letters("great", &Word::from("greet".to_string()));
+
+        assert!(!has_common);
+    }
 }
