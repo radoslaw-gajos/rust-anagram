@@ -4,15 +4,22 @@ use std::cmp::Ordering;
 type CharacterMap = BTreeMap<char, i32>;
 
 struct Word {
+    value: String,
     characters: CharacterMap,
 }
 
 impl Word {
     fn from(text: String) -> Word {
+        let characters = map_characters(&text);
         Word {
-            characters: map_characters(&text),
+            value: text,
+            characters,
         }
     }
+}
+
+fn map_by_length(w: &Word) -> (usize, &Word) {
+    (w.value.len(), w)
 }
 
 fn has_common_letters(s: &str, w: &Word) -> bool {
@@ -133,5 +140,17 @@ mod tests {
         let has_common = has_common_letters("great", &Word::from("greet".to_string()));
 
         assert!(!has_common);
+    }
+
+    #[test]
+    fn should_map_by_length() {
+        // given
+        let word = Word::from("four".to_string());
+
+        // when
+        let (len, _) = map_by_length(&word);
+
+        // then
+        assert_eq!(len, 4);
     }
 }
