@@ -1,8 +1,9 @@
 use std::collections::BTreeMap;
-use std::cmp::Ordering;
+use std::collections::HashMap;
 
 type CharacterMap = BTreeMap<char, i32>;
 
+#[derive(Debug, PartialEq)]
 struct Word {
     value: String,
     characters: CharacterMap,
@@ -18,7 +19,11 @@ impl Word {
     }
 }
 
-fn map_by_length(w: &Word) -> (usize, &Word) {
+fn prepare_map(words: Vec<Word>) -> HashMap<usize, Word> {
+    HashMap::from_iter(words.into_iter().map(map_by_length))
+}
+
+fn map_by_length(w: Word) -> (usize, Word) {
     (w.value.len(), w)
 }
 
@@ -148,9 +153,29 @@ mod tests {
         let word = Word::from("four".to_string());
 
         // when
-        let (len, _) = map_by_length(&word);
+        let (len, _) = map_by_length(word);
 
         // then
         assert_eq!(len, 4);
+    }
+
+    #[test]
+    fn should_prepare_map() {
+        // given
+        let words = vec![
+            Word::from("a".to_string()),
+            Word::from("at".to_string()),
+            Word::from("cat".to_string()),
+        ];
+
+        // when
+        let mapped_words = prepare_map(words.into_iter()/*.map(|w| *w)*/.collect());
+
+        // then
+        assert_eq!(mapped_words, HashMap::from([
+            (1usize, Word::from("a".to_string())),
+            (2usize, Word::from("at".to_string())),
+            (3usize, Word::from("cat".to_string())),
+        ]));
     }
 }
