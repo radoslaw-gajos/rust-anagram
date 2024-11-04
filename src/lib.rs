@@ -19,6 +19,45 @@ impl Word {
     }
 }
 
+fn get_two_word_anagrams(target_word: &str, word_list: &str) -> Vec<(String, String)> {
+    let target_word = Word::from(target_word.to_string());
+
+    let words = word_list_to_vec(word_list)
+        .into_iter()
+        .map(Word::from)
+        .inspect(|word_map| println!("{word_map:#?}"))
+        //.filter(|w| has_common_letters(target_word, &w))
+        .filter(|w| has_common_letters(&w.value, &target_word))
+        .collect();
+    println!("{words:#?}");
+    let word_map = prepare_map(words);
+    println!("{word_map:#?}");
+
+    let mut pairs = Vec::new();
+    let length = target_word.value.len();
+
+    for left_len in 1..=length/2 {
+        let right_len = length - left_len;
+
+        for left in word_map.get(&left_len) {
+            for right in word_map.get(&right_len) {
+                // todo: add pairs which are anagrams
+                pairs.push((left.value.clone(), right.value.clone()))
+            }
+        }
+    }
+
+    pairs
+}
+
+fn word_list_to_vec(word_list: &str) -> Vec<String> {
+    word_list
+        .split_whitespace()
+        .map(String::from)
+        .collect()
+}
+
+// todo HashMap<usize, Word> -> HashMap<usize, Vec<Word>>
 fn prepare_map(words: Vec<Word>) -> HashMap<usize, Word> {
     HashMap::from_iter(words.into_iter().map(map_by_length))
 }
@@ -30,6 +69,7 @@ fn map_by_length(w: Word) -> (usize, Word) {
 fn has_common_letters(s: &str, w: &Word) -> bool {
     for c in s.to_lowercase().chars() {
         if !w.characters.contains_key(&c) {
+            println!("{w:#?} doesn't contain {c}");
             return false;
         }
     }
@@ -177,5 +217,39 @@ mod tests {
             (2usize, Word::from("at".to_string())),
             (3usize, Word::from("cat".to_string())),
         ]));
+    }
+
+    #[test]
+    fn should_get_two_word_anagrams() {
+        // given
+        let target = "abcd";
+        let word_list = "a bcd ab cd xyz abc d";
+
+        // when
+        let anagrams = get_two_word_anagrams(&target, &word_list);
+
+        // then
+        assert_eq!(anagrams, vec![
+            ("a".to_string(), "bcd".to_string()),
+            ("ab".to_string(), "cd".to_string()),
+            ("abc".to_string(), "d".to_string()),
+        ]);
+    }
+
+    #[test]
+    fn should_turn_word_list_to_vector() {
+        // given
+        let word_list = "a quick brown fox";
+
+        // when
+        let result = word_list_to_vec(&word_list);
+
+        // then
+        assert_eq!(result, vec![
+            "a".to_string(),
+            "quick".to_string(),
+            "brown".to_string(),
+            "fox".to_string(),
+        ]);
     }
 }
