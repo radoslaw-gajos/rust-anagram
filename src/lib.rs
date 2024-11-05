@@ -39,7 +39,7 @@ fn get_two_word_anagrams(target_word: &str, word_list: &str) -> Vec<(String, Str
     for left_len in 1..=length/2 {
         let right_len = length - left_len;
 
-        for left in word_map.get(&left_len) {
+        for left in word_map.get(&left_len).or(Some(&Vec::new())).into_iter().into_iter() {
             for right in word_map.get(&right_len) {
                 // todo: add pairs which are anagrams
                 pairs.push((left.value.clone(), right.value.clone()))
@@ -58,8 +58,20 @@ fn word_list_to_vec(word_list: &str) -> Vec<String> {
 }
 
 // todo HashMap<usize, Word> -> HashMap<usize, Vec<Word>>
-fn prepare_map(words: Vec<Word>) -> HashMap<usize, Word> {
-    HashMap::from_iter(words.into_iter().map(map_by_length))
+fn prepare_map(words: Vec<Word>) -> HashMap<usize, Vec<Word>> {
+    let single_map = HashMap::from_iter(words.into_iter().map(map_by_length));
+
+    let mut multi_map = HashMap::new();
+    for (size, word) in single_map.into_iter() {
+        if !multi_map.contains_key(size) {
+            let list = Vec::new();
+            multi_map.insert(size, list);
+        }
+
+        multi_map.get(size).unwrap().push(word);
+    }
+
+    multi_map
 }
 
 fn map_by_length(w: Word) -> (usize, Word) {
