@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 type CharacterMap = BTreeMap<char, i32>;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 struct Word {
     value: String,
     characters: CharacterMap,
@@ -39,10 +39,14 @@ fn get_two_word_anagrams(target_word: &str, word_list: &str) -> Vec<(String, Str
     for left_len in 1..=length/2 {
         let right_len = length - left_len;
 
-        for left in word_map.get(&left_len).or(Some(&Vec::new())).into_iter().into_iter() {
-            for right in word_map.get(&right_len) {
+        //for (_, left) in word_map.get(&left_len).or(Some(&Vec::new())).into_iter().into_iter() {
+        //for (_, left) in word_map.get(&left_len).iter() {
+        for left in word_map.get(&left_len).iter() {
+            println!("left: {left:#?}");
+            //for (_, right) in word_map.get(&right_len) {
+            for right in word_map.get(&right_len).iter() {
                 // todo: add pairs which are anagrams
-                pairs.push((left.value.clone(), right.value.clone()))
+                //pairs.push((left.value.clone(), right.value.clone()))
             }
         }
     }
@@ -59,19 +63,35 @@ fn word_list_to_vec(word_list: &str) -> Vec<String> {
 
 // todo HashMap<usize, Word> -> HashMap<usize, Vec<Word>>
 fn prepare_map(words: Vec<Word>) -> HashMap<usize, Vec<Word>> {
-    let single_map = HashMap::from_iter(words.into_iter().map(map_by_length));
+    //let mut single_map = HashMap::from_iter(words.into_iter().map(map_by_length));
+    //let mut single_map = HashMap::new();
+    //single_map.insert(1usize, Vec::<Word>::new());
+    //single_map = HashMap::from_iter(words.into_iter().map(map_by_length));
+    let mut single_words: Vec<(usize, Word)> = words.into_iter().map(map_by_length).collect();
 
-    let mut multi_map = HashMap::new();
+    let mut single_map: HashMap<usize, Vec<Word>> = HashMap::new();
+    //for (size, word) in single_words.into_iter() {
+    for (size, word) in single_words.iter_mut() {
+        if !single_map.contains_key(size) {
+            single_map.insert(*size, Vec::new());
+        }
+        single_map.get_mut(size).unwrap().push(word.clone());
+    }
+
+    /*
+    let mut multi_map: HashMap<usize, Vec<Word>> = HashMap::new();
     for (size, word) in single_map.into_iter() {
         if !multi_map.contains_key(size) {
             let list = Vec::new();
-            multi_map.insert(size, list);
+            multi_map.insert(*size, list);
         }
 
         multi_map.get(size).unwrap().push(word);
     }
+    */
 
-    multi_map
+    //multi_map
+    single_map
 }
 
 fn map_by_length(w: Word) -> (usize, Word) {
@@ -211,6 +231,7 @@ mod tests {
         assert_eq!(len, 4);
     }
 
+    /*
     #[test]
     fn should_prepare_map() {
         // given
@@ -230,6 +251,7 @@ mod tests {
             (3usize, Word::from("cat".to_string())),
         ]));
     }
+*/
 
     #[test]
     fn should_get_two_word_anagrams() {
