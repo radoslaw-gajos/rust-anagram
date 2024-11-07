@@ -3,6 +3,7 @@ type Result<T> = std::result::Result<T, std::io::Error>;
 pub struct Config {
     pub target_anagram: String,
     pub word_list_file: String,
+    pub target_file: String,
 }
 
 impl Default for Config {
@@ -10,6 +11,7 @@ impl Default for Config {
         Self {
             target_anagram: "documenting".to_string(),
             word_list_file: "word_list.txt".to_string(),
+            target_file: "anagrams.txt".to_string(),
         }
     }
 }
