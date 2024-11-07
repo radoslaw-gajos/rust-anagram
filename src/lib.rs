@@ -6,8 +6,8 @@ mod word {
     use std::collections::HashMap;
 
     pub struct Word {
-        value: String,
-        characters: HashMap<char, u8>,
+        pub value: String,
+        pub characters: HashMap<char, u8>,
     }
 
     impl Word {
@@ -56,11 +56,53 @@ mod word {
     }
 }
 
-pub fn get_anagrams(_target_anagram: &str, word_list: Vec<String>) 
+pub fn get_anagrams(target_anagram: &str, word_list: Vec<String>) 
     -> Result<Vec<(String, String)>> {
+        let target_anagram = Word::from(target_anagram.to_string());
         let _words: Vec<Word> = word_list
             .into_iter()
             .map(Word::from)
+            .filter(|w| is_compatible(w, &target_anagram))
             .collect();
         Ok(vec![("to".to_string(), "do".to_string())])
+}
+
+fn is_compatible(word: &Word, anagram: &Word) -> bool {
+    for c in word.characters.keys() {
+        if !anagram.characters.contains_key(c) {
+            return false;
+        }
+    }
+    true
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn should_check_when_compatible() {
+        // given
+        let target_anagram = Word::from("Godly".to_string());
+        let word = Word::from("Dog".to_string());
+
+        // when
+        let is_compatible = is_compatible(&word, &target_anagram);
+
+        // then
+        assert!(is_compatible);
+    }
+
+    #[test]
+    fn should_check_when_incompatible() {
+        // given
+        let target_anagram = Word::from("Fog".to_string());
+        let word = Word::from("Food".to_string());
+
+        // when
+        let is_compatible = is_compatible(&word, &target_anagram);
+
+        // then
+        assert!(!is_compatible);
+    }
 }
