@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Debug)]
 pub struct Word {
     pub value: String,
     pub characters: HashMap<char, u8>,
@@ -12,6 +13,10 @@ impl Word {
             value: string,
             characters,
         }
+    }
+
+    pub fn len(&self) -> usize {
+        self.value.len()
     }
 }
 
