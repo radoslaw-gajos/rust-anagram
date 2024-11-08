@@ -26,6 +26,10 @@ fn find_anagrams(word_map: &HashMap<usize, Vec<Word>>, target_anagram: &Word)
         let mut anagrams = Vec::new();
 
         for (left_len, left_words) in word_map.iter() {
+            let avoid_duplicates = *left_len > target_anagram.len() / 2;
+            if avoid_duplicates {
+                continue;
+            }
             for left in left_words {
                 if *left_len > target_anagram.len() {
                     continue;
